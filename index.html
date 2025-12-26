@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crisis Relief Coordinator</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart pulse-anim"></i>
+                <span>CRC Platform</span>
+            </div>
+
+            <ul class="nav-links">
+                <li class="active"><a href="#dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="#map"><i class="fa-solid fa-map-location-dot"></i> Live Map</a></li>
+                <li><a href="#resources"><i class="fa-solid fa-box-open"></i> Resources</a></li>
+                <li><a href="#volunteers"><i class="fa-solid fa-users"></i> Volunteers</a></li>
+                <li><a href="#settings"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            </ul>
+
+            <div class="user-profile">
+                <div class="avatar">MG</div>
+                <div class="user-info">
+                    <span class="name">Operations Lead</span>
+                    <span class="status"><span class="dot online"></span> Online</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- Top Bar -->
+            <header class="top-bar glass-panel">
+                <h1>Overview</h1>
+                <div class="controls">
+                    <button class="btn-icon" onclick="app.simulationManager.triggerRandomIncident()"><i
+                            class="fa-solid fa-bolt"></i></button>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Search incidents...">
+                    </div>
+                    <button class="btn-icon">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <section id="dashboard" class="view-section active">
+                <!-- Stats Row -->
+                <div class="stats-grid">
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon alert"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="stat-info">
+                            <h3>Active Crises</h3>
+                            <span class="stat-number" id="total-crises">4</span>
+                            <span class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +2 this
+                                hour</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass-panel"
+                        style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div class="stat-info">
+                                <h3>Resource Levels</h3>
+                                <span class="stat-number">85%</span>
+                            </div>
+                            <div style="height: 60px; width: 60px;">
+                                <canvas id="resourceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass-panel">
+                        <div class="stat-info" style="width: 100%;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <h3>Incident Trend</h3>
+                                <span class="stat-trend trend-down"><i class="fa-solid fa-arrow-trend-up"></i>
+                                    High</span>
+                            </div>
+                            <div style="height: 50px; width: 100%; margin-top: 10px;">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Mini Map Widget -->
+                    <div class="glass-panel map-widget">
+                        <div class="panel-header">
+                            <h2>Live Incident Map</h2>
+                            <div class="map-controls">
+                                <label><input type="checkbox" checked onchange="app.mapManager.toggleLayer('fire')">
+                                    Fire</label>
+                                <label><input type="checkbox" checked onchange="app.mapManager.toggleLayer('medical')">
+                                    Medical</label>
+                            </div>
+                        </div>
+                        <div id="mini-map"></div>
+                    </div>
+
+                    <!-- Recent Alerts Feed -->
+                    <div class="glass-panel alerts-widget">
+                        <div class="panel-header">
+                            <h2>Recent Alerts</h2>
+                            <button class="btn-text view-all" href="#map">View All</button>
+                        </div>
+                        <ul class="alert-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Map View -->
+            <section id="map" class="view-section">
+                <div class="glass-panel full-map-container">
+                    <div id="full-map"></div>
+                </div>
+            </section>
+
+            <!-- Resources View -->
+            <section id="resources" class="view-section">
+                <div class="section-header">
+                    <h2>Resource Inventory</h2>
+                    <button class="btn-primary"><i class="fa-solid fa-plus"></i> Add Resource</button>
+                </div>
+                <div class="resource-grid" id="resource-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Volunteers View -->
+            <section id="volunteers" class="view-section">
+                <div class="section-header">
+                    <h2>Volunteer Coordination</h2>
+                    <button class="btn-primary"><i class="fa-solid fa-user-plus"></i> Recruit</button>
+                </div>
+                <div class="resource-grid" id="volunteer-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="settings" class="view-section">
+                <div class="glass-panel">
+                    <h2>System Settings</h2>
+                    <p style="color: var(--text-secondary); margin-top: 10px;">Configuration options coming soon.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Notifications Container -->
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
